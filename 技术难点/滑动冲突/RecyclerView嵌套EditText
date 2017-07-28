@@ -1,0 +1,56 @@
+  RecyclerView嵌套EditText的时候，记录下来已经输入的信息，因为复用所以会导致输入信息丢失，通过下面方法可以记录输入的内容
+
+  @Override
+    public void onBindViewHolder(final PublishImageAdapter2.ViewHolder holder, final int position) {
+
+        if (getItemViewType(position) == TYPE_NORMAL) {
+            if (holder instanceof ViewHolder) {
+                final PublishImageBean publishImageBean = mShowItems.get(position - 1);
+//关键点：1.给edittext设置tag，
+                holder.et_image_content.setTag(position - 1);
+
+                holder.et_image_content.addTextChangedListener(new TextWatcher() {
+
+                    private CharSequence temp;  //监听前的文本
+                    private int editStart;  //光标开始位置
+                    private int editEnd;    //光标结束位置
+
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                        temp = s;
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        editStart = holder.et_image_content.getSelectionStart();
+                        editEnd = holder.et_image_content.getSelectionEnd();
+                        if (temp.length() < charMaxNum) {
+                        } else {
+                            ToastUtil.showToast("输入字数超过限制长度");
+                            s.delete(editStart - 1, editEnd);
+                            int tempSelection = editStart;
+                            holder.et_image_content.setText(s);
+                            holder.et_image_content.setSelection(tempSelection);
+                        }
+                        //关键点：1.给edittext设置tag，此tag用来与position做对比校验，验证当前选中的edittext是否为需要的控件;
+                        //2.焦点判断：只有当前有焦点的edittext才有更改数据的权限，否则会造成数据紊乱
+                        //3.edittext内数据变动直接直接更改datalist的数据值，以便滑动view时显示正确
+                        if ((Integer) holder.et_image_content.getTag() == position - 1 && holder.et_image_content.hasFocus()) {
+                            mShowItems.get(position - 1).setContent(s.toString());
+                        }
+                    }
+                });
+                return;
+            }
+        } else if (getItemViewType(position) == TYPE_HEADER) {
+            return;
+        } else {
+            return;
+        }
+
+    }
