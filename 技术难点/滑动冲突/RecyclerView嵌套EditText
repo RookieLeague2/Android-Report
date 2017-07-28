@@ -5,9 +5,9 @@
 
         if (getItemViewType(position) == TYPE_NORMAL) {
             if (holder instanceof ViewHolder) {
-                final PublishImageBean publishImageBean = mShowItems.get(position - 1);
+                final PublishImageBean publishImageBean = mShowItems.get(position);
 //关键点：1.给edittext设置tag，
-                holder.et_image_content.setTag(position - 1);
+                holder.et_image_content.setTag(position);
 
                 holder.et_image_content.addTextChangedListener(new TextWatcher() {
 
@@ -40,8 +40,8 @@
                         //关键点：1.给edittext设置tag，此tag用来与position做对比校验，验证当前选中的edittext是否为需要的控件;
                         //2.焦点判断：只有当前有焦点的edittext才有更改数据的权限，否则会造成数据紊乱
                         //3.edittext内数据变动直接直接更改datalist的数据值，以便滑动view时显示正确
-                        if ((Integer) holder.et_image_content.getTag() == position - 1 && holder.et_image_content.hasFocus()) {
-                            mShowItems.get(position - 1).setContent(s.toString());
+                        if ((Integer) holder.et_image_content.getTag() == position && holder.et_image_content.hasFocus()) {
+                            mShowItems.get(position).setContent(s.toString());
                         }
                     }
                 });
